@@ -14,7 +14,7 @@ const tuple = struct {
         return tuple{ .x = x, .y = y, .z = z, .w = 0 };
     }
 
-    fn are_tuples_equal(t1: tuple, t2: tuple) bool {
+    fn are_equal(t1: tuple, t2: tuple) bool {
         const epsilon = 0.00001;
         return are_floats_equal(t1.x, t2.x, epsilon) or
             are_floats_equal(t1.y, t2.y, epsilon) or
@@ -44,7 +44,7 @@ const tuple = struct {
 };
 
 fn are_floats_equal(x: f64, y: f64, epsilon: comptime_float) bool {
-    return std.math.complex.abs(x - y) < epsilon;
+    return @abs(x - y) < epsilon;
 }
 
 test "simple test" {
@@ -60,4 +60,6 @@ test "simple test" {
     try std.testing.expect(pt2.x == 0 and pt2.y == 0 and pt2.z == 0 and pt2.w == 1);
     try std.testing.expect(pt3.w == 1);
     try std.testing.expect(vec3.w == 0);
+
+    try std.testing.expect(!tuple.are_equal(vec1, pt1));
 }
