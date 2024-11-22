@@ -82,7 +82,15 @@ const tuple = struct {
         std.debug.assert(t1.w == 0 and t2.w == 0);
         return t1.x * t2.x + t1.y * t2.y + t1.z * t2.z;
     }
-    
+
+    fn cross_product(t1: tuple, t2: tuple) tuple {
+        std.debug.assert(t1.w == 0 and t2.w == 0);
+        return tuple.create_vector(
+            t1.y * t2.z - t1.z * t2.y,
+            t1.z * t2.x - t1.x * t2.z,
+            t1.x * t2.y - t1.y * t2.x);
+    }
+
     fn print(t:tuple) void {
         std.log.info("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{t.x, t.y, t.z, t.w});
     }
@@ -146,4 +154,55 @@ test "tuple test" {
     // Dot Product
     const dp1 = tuple.dot_product(tuple.create_vector(1,2,3), tuple.create_vector(2,3,4));
     try std.testing.expect(dp1 == 20);
+}
+
+const game1 = struct {
+    const projectile = struct{
+        position: tuple,
+        velocity: tuple,
+    };
+    
+    const environment = struct {
+        gravity: tuple,
+        wind: tuple,
+    };
+
+    proj: projectile,
+    env: environment,
+    
+    fn init(t1:tuple, t2:tuple, t3:tuple, t4:tuple) game1{
+        return .{
+            .proj = .{
+                .position = t1,
+                .velocity = t2,
+            },
+            .env = .{
+                .gravity = t3,
+                .wind = t4,
+            }
+        };
+    }
+    
+	fn tick(self: *game1) void {
+	    self.proj = projectile {
+	        .position = tuple.add_tuples(self.proj.position, self.proj.velocity),
+	        .velocity = tuple.add_tuples(tuple.add_tuples(self.proj.velocity, self.env.gravity), self.env.wind)
+	    };
+	}
+
+};
+
+pub fn main() void {
+    var state = game1.init(tuple.create_point(0,1,0),
+                           tuple.normalize(tuple.create_vector(1,1,0)),
+                           tuple.create_vector(0, -0.1,0),
+                           tuple. create_vector(-0.01, 0, 0));
+
+    tuple.print(state.proj.position);
+    
+    while (true) {
+        state.tick();
+        tuple.print(state.proj.position);
+        break;
+    }
 }
