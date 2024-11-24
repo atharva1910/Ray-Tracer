@@ -1,12 +1,12 @@
 const std = @import("std");
-const tuple= @import("tuple.zig").tuple;
+const tuple = @import("tuple.zig").tuple;
 
 const game1 = struct {
     const projectile = struct{
         position: tuple,
         velocity: tuple,
     };
-    
+
     const environment = struct {
         gravity: tuple,
         wind: tuple,
@@ -14,7 +14,7 @@ const game1 = struct {
 
     proj: projectile,
     env: environment,
-    
+
     fn init(t1:tuple, t2:tuple, t3:tuple, t4:tuple) game1{
         return .{
             .proj = .{
@@ -27,7 +27,7 @@ const game1 = struct {
             }
         };
     }
-    
+
 	fn tick(self: *game1) void {
 	    self.proj = projectile {
 	        .position = tuple.add_tuples(self.proj.position, self.proj.velocity),
@@ -44,7 +44,7 @@ pub fn main() void {
                            tuple. create_vector(-0.01, 0, 0));
 
     tuple.print(state.proj.position);
-    
+
     while (true) {
         state.tick();
         tuple.print(state.proj.position);
