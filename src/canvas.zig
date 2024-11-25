@@ -28,7 +28,7 @@ pub const canvas = struct {
         return arr_ptr;
     }
 
-    pub fn free_canvas(self: *canvas) void {
+    pub fn free_canvas(self: *const canvas) void {
         const arr_ptr = self.pixels;
         for (arr_ptr, 0..) |_, i| {
             self.allocator.free(arr_ptr[i]);
@@ -36,12 +36,12 @@ pub const canvas = struct {
         self.allocator.free(arr_ptr);
     }
 
-    pub fn write_pixel(self: *canvas, x: u32, y: u32, color: tuple) void {
+    pub fn write_pixel(self: *const canvas, x: u32, y: u32, color: tuple) void {
         std.debug.assert(x < self.width and y < self.height);
         self.pixels[x][y] = color;
     }
 
-    pub fn pixel_at(self: *canvas, x: u32, y: u32) tuple {
+    pub fn pixel_at(self: *const canvas, x: u32, y: u32) tuple {
         std.debug.assert(x < self.width and y < self.height);
         return self.pixels[x][y];
     }
@@ -51,7 +51,7 @@ test "canvas test" {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     errdefer _ = gpa.deinit();
 
-    var window = try canvas.init_canvas(&gpa.allocator(), 10, 20);
+    const window = try canvas.init_canvas(&gpa.allocator(), 10, 20);
     defer window.free_canvas();
     try std.testing.expect(window.width == 10 and window.height == 20);
 
