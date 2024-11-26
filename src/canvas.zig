@@ -17,11 +17,11 @@ pub const canvas = struct {
     }
 
     fn alloc_pixels(allocator: *const std.mem.Allocator, width: u64, height: u64) ![][]tuple {
-        const arr_ptr = try allocator.alloc([]tuple, width);
+        const arr_ptr = try allocator.alloc([]tuple, height);
         for (arr_ptr, 0..) |_, i| {
-            arr_ptr[i] = try allocator.alloc(tuple, height);
+            arr_ptr[i] = try allocator.alloc(tuple, width);
             for (arr_ptr[i], 0..) |_, j| {
-                arr_ptr[i][j] = tuple.create_color(0, 0, 0);
+                arr_ptr[i][j] = tuple.create_color(1, 0.8, 0.6);
             }
         }
 
@@ -36,14 +36,14 @@ pub const canvas = struct {
         self.allocator.free(arr_ptr);
     }
 
-    pub fn write_pixel(self: *const canvas, x: u32, y: u32, color: tuple) void {
-        std.debug.assert(x < self.width and y < self.height);
-        self.pixels[x][y] = color;
+    pub fn write_pixel(self: *const canvas, width: u32, height: u32, color: tuple) void {
+        std.debug.assert(width < self.width and height < self.height);
+        self.pixels[height][width] = color;
     }
 
-    pub fn pixel_at(self: *const canvas, x: u32, y: u32) tuple {
-        std.debug.assert(x < self.width and y < self.height);
-        return self.pixels[x][y];
+    pub fn pixel_at(self: *const canvas, width: u32, height: u32) tuple {
+        std.debug.assert(width < self.width and height < self.height);
+        return self.pixels[height][width];
     }
 };
 

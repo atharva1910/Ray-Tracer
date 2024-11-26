@@ -25,7 +25,10 @@ pub const ppm = struct {
         _ = try file.write(max_color_value);
 
         for (pCanvas.pixels) |row| {
-            for (row) |pixel| {
+            for (row, 0..) |pixel, i| {
+                if (i > 0 and i % 70 == 0) {
+                    _ = try file.write("\n");
+                }
                 const red = scale_color(pixel.x);
                 const blue = scale_color(pixel.y);
                 const green = scale_color(pixel.z);
@@ -53,4 +56,9 @@ test "ppm test" {
     window.write_pixel(4, 2, tuple.create_color(-0.5, 0, 1));
 
     try ppm.write_to_file(&allocator, "image.ppm", &window);
+
+    const window1 = try canvas.init_canvas(&allocator, 10, 2);
+    defer window1.free_canvas();
+    try std.testing.expect(window1.width == 10 and window1.height == 2);
+    try ppm.write_to_file(&allocator, "image1.ppm", &window1);
 }
