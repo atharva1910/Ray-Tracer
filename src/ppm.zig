@@ -1,5 +1,6 @@
 const std = @import("std");
 const canvas = @import("canvas.zig").canvas;
+const tuple = @import("tuple.zig").tuple;
 
 pub const ppm = struct {
     const flavour = "P3\n";
@@ -7,7 +8,7 @@ pub const ppm = struct {
     const max_color_val = 255;
 
     fn scale_color(color: f64) u8 {
-        const color_int: i64 = @intFromFloat(color);
+        const color_int: i64 = @intFromFloat(@ceil(color * max_color_val));
         return @intCast(@max(@min(color_int, 255), 0));
     }
 
@@ -43,9 +44,13 @@ test "ppm test" {
     const allocator = gpa.allocator();
     errdefer _ = gpa.deinit();
 
-    const window = try canvas.init_canvas(&allocator, 10, 20);
+    const window = try canvas.init_canvas(&allocator, 5, 3);
     defer window.free_canvas();
-    try std.testing.expect(window.width == 10 and window.height == 20);
+    try std.testing.expect(window.width == 5 and window.height == 3);
+
+    window.write_pixel(0, 0, tuple.create_color(1.5, 0, 0));
+    window.write_pixel(2, 1, tuple.create_color(0, 0.5, 0));
+    window.write_pixel(4, 2, tuple.create_color(-0.5, 0, 1));
 
     try ppm.write_to_file(&allocator, "image.ppm", &window);
 }
