@@ -16,7 +16,7 @@ pub const ppm = struct {
         const file = try std.fs.cwd().createFile(file_name, .{ .read = true });
         defer file.close();
 
-        //_ = try file.write(flavour);
+        _ = try file.write(flavour);
 
         const dimensions = try std.fmt.allocPrint(allocator.*, "{} {}\n", .{ pCanvas.width, pCanvas.height });
         _ = try file.write(dimensions);
@@ -26,19 +26,25 @@ pub const ppm = struct {
 
         for (pCanvas.pixels) |row| {
             for (row, 0..) |pixel, i| {
-                if (i > 0 and i % 70 == 0) {
-                    _ = try file.write("\n");
+                if (i > 0) {
+                    if (i % 70 == 0) {
+                        _ = try file.write("\n");
+                    } else {
+                        _ = try file.write(" ");
+                    }
                 }
                 const red = scale_color(pixel.x);
                 const blue = scale_color(pixel.y);
                 const green = scale_color(pixel.z);
-                const buff = try std.fmt.allocPrint(allocator.*, "{} {} {} ", .{ red, blue, green });
+                const buff = try std.fmt.allocPrint(allocator.*, "{} {} {}", .{ red, blue, green });
                 _ = try file.write(buff);
                 allocator.free(buff);
             }
 
             _ = try file.write("\n");
         }
+
+        _ = try file.write("\n");
     }
 };
 
