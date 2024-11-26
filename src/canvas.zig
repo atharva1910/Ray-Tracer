@@ -21,7 +21,7 @@ pub const canvas = struct {
         for (arr_ptr, 0..) |_, i| {
             arr_ptr[i] = try allocator.alloc(tuple, height);
             for (arr_ptr[i], 0..) |_, j| {
-                arr_ptr[i][j] = tuple.create_color(0, 0, 0);
+                arr_ptr[i][j] = tuple.create_color(0, 0, 1);
             }
         }
 

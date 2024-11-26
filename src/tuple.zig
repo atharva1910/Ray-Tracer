@@ -65,7 +65,7 @@ pub const tuple = struct {
 
     pub fn multiply(t: tuple, factor: f64) tuple {
         std.debug.assert(t.w == 0);
-        return tuple {
+        return tuple{
             .x = t.x * factor,
             .y = t.y * factor,
             .z = t.z * factor,
@@ -75,7 +75,7 @@ pub const tuple = struct {
 
     pub fn multiply_color(t1: tuple, t2: tuple) tuple {
         //std.debug.assert(t1.w == 2 and t2.w == 2);
-        return tuple {
+        return tuple{
             .x = t1.x * t2.x,
             .y = t1.y * t2.y,
             .z = t1.z * t2.z,
@@ -89,10 +89,10 @@ pub const tuple = struct {
         return @sqrt(t.x * t.x + t.y * t.y + t.z * t.z);
     }
 
-    pub fn normalize(t:tuple) tuple {
+    pub fn normalize(t: tuple) tuple {
         std.debug.assert(t.w == 0);
         const mag = t.magnitude();
-        return tuple {
+        return tuple{
             .x = t.x / mag,
             .y = t.y / mag,
             .z = t.z / mag,
@@ -107,15 +107,12 @@ pub const tuple = struct {
 
     pub fn cross_product(t1: tuple, t2: tuple) tuple {
         std.debug.assert(t1.w == 0 and t2.w == 0);
-        return tuple.create_vector(
-            t1.y * t2.z - t1.z * t2.y,
-            t1.z * t2.x - t1.x * t2.z,
-            t1.x * t2.y - t1.y * t2.x);
+        return tuple.create_vector(t1.y * t2.z - t1.z * t2.y, t1.z * t2.x - t1.x * t2.z, t1.x * t2.y - t1.y * t2.x);
     }
 
-    pub fn print(t:tuple) void {
-        std.log.info("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{t.x, t.y, t.z, t.w});
-        std.log.warn("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{t.x, t.y, t.z, t.w});
+    pub fn print(t: tuple) void {
+        std.log.info("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{ t.x, t.y, t.z, t.w });
+        std.log.warn("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{ t.x, t.y, t.z, t.w });
     }
 };
 
@@ -158,20 +155,20 @@ test "tuple test" {
     try std.testing.expect(tuple.are_equal(divide_vector, vec1));
 
     // Magnitude
-    try std.testing.expect(tuple.magnitude(.{.x = 1, .y = 0, .z = 0, .w = 0}) == 1);
-    try std.testing.expect(tuple.magnitude(.{.x = 1, .y = 0, .z = 0, .w = 0}) == 1);
+    try std.testing.expect(tuple.magnitude(.{ .x = 1, .y = 0, .z = 0, .w = 0 }) == 1);
+    try std.testing.expect(tuple.magnitude(.{ .x = 1, .y = 0, .z = 0, .w = 0 }) == 1);
 
     // Normalize
-    const vec5 = tuple.create_vector(4,0,0);
+    const vec5 = tuple.create_vector(4, 0, 0);
     const nvec1 = tuple.normalize(vec5);
     try std.testing.expect(nvec1.x == 1 and nvec1.y == 0 and nvec1.z == 0 and nvec1.z == 0);
 
-    const vec6 = tuple.create_vector(1,2,3);
+    const vec6 = tuple.create_vector(1, 2, 3);
     const nvec2 = tuple.normalize(vec6);
     try std.testing.expect(tuple.are_equal(nvec2, tuple.create_vector(0.26726, 0.53452, 0.80178)));
 
     // Dot Product
-    const dp1 = tuple.dot_product(tuple.create_vector(1,2,3), tuple.create_vector(2,3,4));
+    const dp1 = tuple.dot_product(tuple.create_vector(1, 2, 3), tuple.create_vector(2, 3, 4));
     try std.testing.expect(dp1 == 20);
 
     // Color
@@ -179,7 +176,7 @@ test "tuple test" {
     try std.testing.expect(color1.x == -0.5 and color1.y == 0.4 and color1.z == 1.7);
 
     // Add color
-    const add_color = tuple.add_tuples(tuple.create_color(0.9, 0.6, 0.75), tuple.create_color(0.7,0.1,0.25));
+    const add_color = tuple.add_tuples(tuple.create_color(0.9, 0.6, 0.75), tuple.create_color(0.7, 0.1, 0.25));
     try std.testing.expect(add_color.x == 1.6 and add_color.y == 0.7 and add_color.z == 1.0);
 
     // Sub color

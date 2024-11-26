@@ -2,17 +2,39 @@ const std = @import("std");
 const canvas = @import("canvas.zig").canvas;
 
 pub const ppm = struct {
-    const flavour_type = "P3";
-    const max_color_value = 255;
-    pub fn write_to_file(allocator: *const std.mem.Allocator, file_name: []const u8, pCanvas: *const canvas) !void {
-        _ = pCanvas;
+    const flavour = "P3\n";
+    const max_color_value = "255\n";
+    const max_color_val = 255;
 
+    fn scale_color(color: f64) u8 {
+        const color_int: i64 = @intFromFloat(color);
+        return @intCast(@max(@min(color_int, 255), 0));
+    }
+
+    pub fn write_to_file(allocator: *const std.mem.Allocator, file_name: []const u8, pCanvas: *const canvas) !void {
         const file = try std.fs.cwd().createFile(file_name, .{ .read = true });
         defer file.close();
 
-        const flavour = try std.fmt.allocPrint(allocator.*, "{s}\n", .{flavour_type});
-        defer allocator.free(flavour);
-        _ = try file.write(flavour);
+        //_ = try file.write(flavour);
+
+        const dimensions = try std.fmt.allocPrint(allocator.*, "{} {}\n", .{ pCanvas.width, pCanvas.height });
+        _ = try file.write(dimensions);
+        allocator.free(dimensions);
+
+        _ = try file.write(max_color_value);
+
+        for (pCanvas.pixels) |row| {
+            for (row) |pixel| {
+                const red = scale_color(pixel.x);
+                const blue = scale_color(pixel.y);
+                const green = scale_color(pixel.z);
+                const buff = try std.fmt.allocPrint(allocator.*, "{} {} {} ", .{ red, blue, green });
+                _ = try file.write(buff);
+                allocator.free(buff);
+            }
+
+            _ = try file.write("\n");
+        }
     }
 };
 
