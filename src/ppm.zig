@@ -24,28 +24,33 @@ pub const ppm = struct {
 
         _ = try file.write(max_color_value);
 
+        var list = std.ArrayList(u8).init(allocator.*);
+        defer list.deinit();
+
+        var buff: [11]u8 = undefined;
+
         for (pCanvas.pixels) |col| {
             for (col, 0..) |pixel, width| {
                 if (width > 0) {
                     if (width % 70 == 0) {
-                        _ = try file.write("\n");
+                        try list.append('\n');
                     } else {
-                        _ = try file.write(" ");
+                        try list.append(' ');
                     }
                 }
 
                 const red = scale_color(pixel.x);
                 const blue = scale_color(pixel.y);
                 const green = scale_color(pixel.z);
-                const buff = try std.fmt.allocPrint(allocator.*, "{} {} {}", .{ red, blue, green });
-                _ = try file.write(buff);
-                allocator.free(buff);
+                const str = try std.fmt.bufPrint(&buff, "{} {} {}", .{ red, blue, green });
+                try list.appendSlice(str);
             }
 
-            _ = try file.write("\n");
+            try list.append('\n');
         }
 
-        _ = try file.write("\n");
+        try list.append('\n');
+        _ = try file.write(list.items);
     }
 };
 

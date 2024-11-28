@@ -50,8 +50,8 @@ pub const canvas = struct {
         return self.pixels[height][width];
     }
 
-    pub fn save(self: *const canvas) !void {
-        try ppm.write_to_file(self.allocator, "image.ppm", self);
+    pub fn save(self: *const canvas, name: []const u8) !void {
+        try ppm.write_to_file(self.allocator, name, self);
     }
 
     pub fn fill_all_pixels(self: *const canvas, color: tuple) void {
