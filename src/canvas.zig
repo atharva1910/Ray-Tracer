@@ -1,5 +1,6 @@
 const std = @import("std");
 const tuple = @import("tuple.zig").tuple;
+const ppm = @import("ppm.zig").ppm;
 
 pub const canvas = struct {
     width: u32,
@@ -21,7 +22,7 @@ pub const canvas = struct {
         for (arr_ptr, 0..) |_, i| {
             arr_ptr[i] = try allocator.alloc(tuple, width);
             for (arr_ptr[i], 0..) |_, j| {
-                arr_ptr[i][j] = tuple.create_color(1, 0.8, 0.6);
+                arr_ptr[i][j] = tuple.create_color(0, 0, 0);
             }
         }
 
@@ -37,13 +38,29 @@ pub const canvas = struct {
     }
 
     pub fn write_pixel(self: *const canvas, width: u32, height: u32, color: tuple) void {
-        std.debug.assert(width < self.width and height < self.height);
+        if (width < self.width and height < self.height) {
+            std.log.debug("Out of bounds write to pixel [{}][{}], canvas size [{}][{}]", .{ height, width, self.height, self.width });
+            return;
+        }
         self.pixels[height][width] = color;
     }
 
     pub fn pixel_at(self: *const canvas, width: u32, height: u32) tuple {
         std.debug.assert(width < self.width and height < self.height);
         return self.pixels[height][width];
+    }
+
+    pub fn save(self: *const canvas) !void {
+        try ppm.write_to_file(self.allocator, "image.ppm", self);
+    }
+
+    pub fn fill_all_pixels(self: *const canvas, color: tuple) void {
+        for (self.pixels, 0..) |col, height| {
+            for (col, 0..) |_, width| {
+                //std.debug.print("{} {}\n", .{ height, width });
+                self.pixels[height][width] = color;
+            }
+        }
     }
 };
 
