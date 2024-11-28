@@ -17,18 +17,6 @@ pub const canvas = struct {
         };
     }
 
-    fn alloc_pixels(allocator: *const std.mem.Allocator, width: u64, height: u64) ![][]tuple {
-        const arr_ptr = try allocator.alloc([]tuple, height);
-        for (arr_ptr, 0..) |_, i| {
-            arr_ptr[i] = try allocator.alloc(tuple, width);
-            for (arr_ptr[i], 0..) |_, j| {
-                arr_ptr[i][j] = tuple.create_color(0, 0, 0);
-            }
-        }
-
-        return arr_ptr;
-    }
-
     pub fn free_canvas(self: *const canvas) void {
         const arr_ptr = self.pixels;
         for (arr_ptr, 0..) |_, i| {
@@ -38,11 +26,15 @@ pub const canvas = struct {
     }
 
     pub fn write_pixel(self: *const canvas, width: u32, height: u32, color: tuple) void {
-        if (width < self.width and height < self.height) {
+        if (width >= self.width or height >= self.height) {
             std.log.debug("Out of bounds write to pixel [{}][{}], canvas size [{}][{}]", .{ height, width, self.height, self.width });
             return;
         }
         self.pixels[height][width] = color;
+    }
+
+    pub fn write_pixel_scale(self: *const canvas, width: f64, height: f64, color: tuple) void {
+        return write_pixel(self, scale_pixel(width), scale_pixel(height), color);
     }
 
     pub fn pixel_at(self: *const canvas, width: u32, height: u32) tuple {
@@ -61,6 +53,22 @@ pub const canvas = struct {
                 self.pixels[height][width] = color;
             }
         }
+    }
+
+    fn scale_pixel(pos: f64) u32 {
+        const pos_int: i64 = @intFromFloat(pos);
+        return @intCast(pos_int);
+    }
+    fn alloc_pixels(allocator: *const std.mem.Allocator, width: u64, height: u64) ![][]tuple {
+        const arr_ptr = try allocator.alloc([]tuple, height);
+        for (arr_ptr, 0..) |_, i| {
+            arr_ptr[i] = try allocator.alloc(tuple, width);
+            for (arr_ptr[i], 0..) |_, j| {
+                arr_ptr[i][j] = tuple.create_color(0, 0, 0);
+            }
+        }
+
+        return arr_ptr;
     }
 };
 

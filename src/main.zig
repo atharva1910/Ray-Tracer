@@ -28,7 +28,8 @@ const game = struct {
     }
 
     fn tick(self: *game) void {
-        self.proj = projectile{ .position = tuple.add_tuples(self.proj.position, self.proj.velocity), .velocity = tuple.add_tuples(tuple.add_tuples(self.proj.velocity, self.env.gravity), self.env.wind) };
+        self.proj.position = tuple.add_tuples(self.proj.position, self.proj.velocity);
+        self.proj.velocity = tuple.add_tuples(tuple.add_tuples(self.proj.velocity, self.env.gravity), self.env.wind);
     }
 };
 
@@ -39,20 +40,22 @@ pub fn main() !void {
     const window = try canvas.init_canvas(&gpa.allocator(), 900, 900);
     defer window.free_canvas();
 
-    window.fill_all_pixels(tuple.create_color(255, 255, 255));
-    window.save("image1.ppm") catch |e| {
+    const red = tuple.create_color(1, 0, 0);
+    const fheight: f64 = @floatFromInt(window.height);
+
+    window.fill_all_pixels(tuple.create_color(0, 0, 0));
+
+    var state = game.init(tuple.create_point(0, 1, 0), tuple.normalize(tuple.create_vector(1, 1, 0)), tuple.create_vector(0, -0.1, 0), tuple.create_vector(-0.01, 0, 0));
+
+    window.write_pixel_scale(state.proj.position.x, fheight - state.proj.position.y, red);
+
+    while (true) {
+        state.tick();
+        window.write_pixel_scale(state.proj.position.x, fheight - state.proj.position.y, red);
+        if (state.proj.position.y < 0) break;
+    }
+
+    window.save("game.ppm") catch |e| {
         std.log.err("Failed to save ppm {}\n", .{e});
     };
-
-    //var state = game.init(tuple.create_point(0, 1, 0), tuple.normalize(tuple.create_vector(1, 1, 0)), tuple.create_vector(0, -0.1, 0), tuple.create_vector(-0.01, 0, 0));
-
-    //tuple.print(state.proj.position);
-    //window.write_pixel(state.proj.position.x, state.proj.position.y, tuple.create_color(1, 0, 0));
-
-    //while (true) {
-    //    state.tick();
-    //    //tuple.print(state.proj.position);
-    //    //window.write_pixel(state.proj.position.x, state.proj.position.y, tuple.create_color(1, 0, 0));
-    //    if (state.proj.position.y < 0) break;
-    //}
 }
