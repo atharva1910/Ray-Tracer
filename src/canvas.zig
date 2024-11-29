@@ -26,11 +26,11 @@ pub const canvas = struct {
     }
 
     pub fn write_pixel(self: *const canvas, width: u32, height: u32, color: tuple) void {
-        if (width >= self.width or height >= self.height) {
+        if (width >= self.width or self.height - height >= self.height or self.height - height < 0) {
             std.log.debug("Out of bounds write to pixel [{}][{}], canvas size [{}][{}]", .{ height, width, self.height, self.width });
             return;
         }
-        self.pixels[height][width] = color;
+        self.pixels[self.height - height][width] = color;
     }
 
     pub fn write_pixel_scale(self: *const canvas, width: f64, height: f64, color: tuple) void {

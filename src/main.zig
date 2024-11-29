@@ -31,8 +31,7 @@ const game = struct {
     }
 
     fn draw_pixel(self: *game) void {
-        const fheight: f64 = @floatFromInt(self.window.height);
-        self.window.write_pixel_scale(self.proj.position.x, fheight - self.proj.position.y, pixel_color);
+        self.window.write_pixel_scale(self.proj.position.x, self.proj.position.y, pixel_color);
     }
 
     fn tick(self: *game) bool {
