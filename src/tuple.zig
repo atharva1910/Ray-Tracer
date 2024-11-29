@@ -112,7 +112,6 @@ pub const tuple = struct {
 
     pub fn print(t: tuple) void {
         std.log.info("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{ t.x, t.y, t.z, t.w });
-        std.log.warn("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{ t.x, t.y, t.z, t.w });
     }
 };
 

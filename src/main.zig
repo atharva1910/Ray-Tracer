@@ -21,7 +21,7 @@ const game = struct {
 
     fn init(allocator: *const std.mem.Allocator, t1: tuple, t2: tuple, t3: tuple, t4: tuple) !game {
         var gameState: game = undefined;
-        gameState.window = try canvas.init_canvas(allocator, 900, 900);
+        gameState.window = try canvas.init_canvas(allocator, 900, 500);
         gameState.window.fill_all_pixels(tuple.create_color(0, 0, 0));
 
         gameState.proj = .{ .position = t1, .velocity = t2 };
@@ -38,6 +38,8 @@ const game = struct {
     fn tick(self: *game) bool {
         self.proj.position = tuple.add_tuples(self.proj.position, self.proj.velocity);
         self.proj.velocity = tuple.add_tuples(tuple.add_tuples(self.proj.velocity, self.env.gravity), self.env.wind);
+        tuple.print(self.proj.position);
+        tuple.print(self.proj.velocity);
         draw_pixel(self);
 
         if (self.proj.position.y < 0) {
@@ -59,9 +61,9 @@ pub fn main() !void {
     errdefer _ = gpa.deinit();
 
     const position = tuple.create_point(0, 1, 0);
-    const velocity = tuple.normalize(tuple.create_vector(1, 1, 0));
-    const gravity = tuple.create_vector(0, -0.1, 0);
-    const wind = tuple.create_vector(-0.01, 0, 0);
+    const velocity = tuple.normalize(tuple.create_vector(5, 5, 1));
+    const gravity = tuple.create_vector(0, -0.001, 0);
+    const wind = tuple.create_vector(-0.0001, 0, 0);
 
     var state = game.init(&gpa.allocator(), position, velocity, gravity, wind) catch |err| {
         std.log.err("Failed to init the game state {}\n", .{err});
