@@ -29,10 +29,9 @@ const matrix = struct {
 
     pub fn set_col(self: *matrix, col_num: u8, data: [4]f64) void {
         std.debug.assert(col_num < self.col_size);
-        self.values[0][col_num] = data[0];
-        self.values[1][col_num] = data[1];
-        self.values[2][col_num] = data[2];
-        self.values[3][col_num] = data[3];
+        for (0..self.col_size) |i| {
+            self.values[i][col_num] = data[i];
+        }
     }
 
     pub fn get(self: *const matrix, x: u8, y: u8) f64 {
@@ -55,4 +54,24 @@ test "matrix test" {
     try std.testing.expect(m1.get(2, 2) == 11);
     try std.testing.expect(m1.get(3, 0) == 13.5);
     try std.testing.expect(m1.get(3, 2) == 15.5);
+
+    var m2 = matrix.init(2, 2);
+    m2.set_row(0, .{ -3, 5, 0, 0 });
+    m2.set_row(1, .{ 1, -2, 0, 0 });
+
+    try std.testing.expect(m2.get(0, 0) == -3);
+    try std.testing.expect(m2.get(0, 1) == 5);
+    try std.testing.expect(m2.get(1, 0) == 1);
+    try std.testing.expect(m2.get(1, 1) == -2);
+
+    var m3 = matrix.init(3, 3);
+    m3.set_row(0, .{ -3, 5, 0, 0 });
+    m3.set_row(1, .{ 1, -2, -7, 0 });
+    m3.set_row(2, .{ 0, 1, 1, 0 });
+
+    try std.testing.expect(m3.get(0, 0) == -3);
+    try std.testing.expect(m3.get(0, 1) == 5);
+    try std.testing.expect(m3.get(1, 0) == 1);
+    try std.testing.expect(m3.get(1, 1) == -2);
+    try std.testing.expect(m3.get(2, 2) == 1);
 }
