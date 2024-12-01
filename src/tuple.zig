@@ -1,5 +1,6 @@
 const std = @import("std");
 const are_floats_equal = @import("helper.zig").are_floats_equal;
+const matrix = @import("matrix.zig").matrix;
 
 pub const tuple = struct {
     x: f64,
@@ -13,6 +14,10 @@ pub const tuple = struct {
 
     pub fn create_vector(x: f64, y: f64, z: f64) tuple {
         return tuple{ .x = x, .y = y, .z = z, .w = 0 };
+    }
+
+    fn create_tuple(x: f64, y: f64, z: f64, w: i8) tuple {
+        return tuple{ .x = x, .y = y, .z = z, .w = w };
     }
 
     pub fn create_color(red: f64, green: f64, blue: f64) tuple {
@@ -114,6 +119,17 @@ pub const tuple = struct {
     pub fn err_print(t: tuple) void {
         std.log.err("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{ t.x, t.y, t.z, t.w });
     }
+
+    pub fn multiply_vector(self: *const tuple, m: *const matrix) tuple {
+        var tuple_matrix = matrix.init(4, 1);
+        tuple_matrix.set(0, 0, self.x);
+        tuple_matrix.set(1, 0, self.y);
+        tuple_matrix.set(2, 0, self.z);
+        tuple_matrix.set(3, 0, @as(f64, @floatFromInt(self.w)));
+
+        const ret = m.multiply(&tuple_matrix);
+        return tuple.create_tuple(ret.get(0, 0), ret.get(1, 0), ret.get(2, 0), @as(i8, @intFromFloat(ret.get(3, 0))));
+    }
 };
 
 test "tuple test" {
@@ -190,4 +206,15 @@ test "tuple test" {
     // Mul color by scalar
     const mul_color_scalar = tuple.multiply(tuple.create_color(0.1, 0.3, 0.4), 2);
     try std.testing.expect(tuple.are_equal(mul_color_scalar, tuple.create_color(0.2, 0.6, 0.8)));
+
+    // Multipy vector
+    const mul_tuple = tuple.create_point(1, 2, 3);
+    var mul_matrix = matrix.init(4, 4);
+    mul_matrix.set_row(0, .{ 1, 2, 3, 4 });
+    mul_matrix.set_row(1, .{ 2, 4, 4, 2 });
+    mul_matrix.set_row(2, .{ 8, 6, 4, 1 });
+    mul_matrix.set_row(3, .{ 0, 0, 0, 1 });
+
+    const test_tuple = tuple.create_tuple(18, 24, 33, 1);
+    try std.testing.expect(tuple.are_equal(mul_tuple.multiply_vector(&mul_matrix), test_tuple));
 }

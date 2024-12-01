@@ -1,16 +1,13 @@
 const std = @import("std");
 const helper = @import("helper.zig");
 
-const matrix = struct {
+pub const matrix = struct {
     const MAX_SIZE = 4;
     values: [MAX_SIZE][MAX_SIZE]f64,
     row_size: u8,
     col_size: u8,
 
     pub fn init(row_size: u8, col_size: u8) matrix {
-        std.debug.assert(row_size >= 2 and row_size <= MAX_SIZE);
-        std.debug.assert(col_size >= 2 and col_size <= MAX_SIZE);
-
         return matrix{
             .row_size = row_size,
             .col_size = col_size,
@@ -52,9 +49,9 @@ const matrix = struct {
     }
 
     pub fn multiply(self: *const matrix, other: *const matrix) matrix {
-        std.debug.assert(self.row_size != matrix.MAX_SIZE or other.row_size != MAX_SIZE);
-        std.debug.assert(self.col_size != matrix.MAX_SIZE or other.col_size != MAX_SIZE);
-        std.debug.assert(self.row_size != other.col_size);
+        //std.debug.assert(self.row_size != matrix.MAX_SIZE or other.row_size != MAX_SIZE);
+        //std.debug.assert(self.col_size != matrix.MAX_SIZE or other.col_size != MAX_SIZE);
+        //std.debug.assert(self.row_size != other.col_size);
 
         var ret: matrix = matrix.init(matrix.MAX_SIZE, matrix.MAX_SIZE);
 
