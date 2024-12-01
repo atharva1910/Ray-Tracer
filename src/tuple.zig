@@ -217,4 +217,7 @@ test "tuple test" {
 
     const test_tuple = tuple.create_tuple(18, 24, 33, 1);
     try std.testing.expect(tuple.are_equal(mul_tuple.multiply_vector(&mul_matrix), test_tuple));
+
+    const identity_matrix = matrix.init_identity(4, 4);
+    try std.testing.expect(tuple.are_equal(mul_tuple.multiply_vector(&identity_matrix), mul_tuple));
 }
