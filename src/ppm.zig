@@ -1,16 +1,12 @@
 const std = @import("std");
 const canvas = @import("canvas.zig").canvas;
 const tuple = @import("tuple.zig").tuple;
+const helper = @import("helper.zig");
 
 pub const ppm = struct {
     const flavour = "P3\n";
     const max_color_value = "255\n";
     const max_color_val = 255;
-
-    fn scale_color(color: f64) u8 {
-        const color_int: i64 = @intFromFloat(@ceil(color * max_color_val));
-        return @intCast(@max(@min(color_int, 255), 0));
-    }
 
     pub fn write_to_file(allocator: *const std.mem.Allocator, file_name: []const u8, pCanvas: *const canvas) !void {
         const file = try std.fs.cwd().createFile(file_name, .{ .read = true });
@@ -39,9 +35,9 @@ pub const ppm = struct {
                     }
                 }
 
-                const red = scale_color(pixel.x);
-                const blue = scale_color(pixel.y);
-                const green = scale_color(pixel.z);
+                const red = helper.scale_color(pixel.x, max_color_val);
+                const blue = helper.scale_color(pixel.y, max_color_val);
+                const green = helper.scale_color(pixel.z, max_color_val);
                 const str = try std.fmt.bufPrint(&buff, "{} {} {}", .{ red, blue, green });
                 try list.appendSlice(str);
             }

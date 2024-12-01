@@ -1,4 +1,5 @@
 const std = @import("std");
+const helper = @import("helper.zig");
 
 const matrix = struct {
     const MAX_SIZE = 4;
@@ -38,6 +39,10 @@ const matrix = struct {
         std.debug.assert(x < self.row_size and y < self.col_size);
         return self.values[x][y];
     }
+
+    pub fn is_equal(self: *const matrix, other: *const matrix) bool {
+        return std.mem.equal(matrix.values, self.values, other.values);
+    }
 };
 
 test "matrix test" {
@@ -74,4 +79,6 @@ test "matrix test" {
     try std.testing.expect(m3.get(1, 0) == 1);
     try std.testing.expect(m3.get(1, 1) == -2);
     try std.testing.expect(m3.get(2, 2) == 1);
+
+    try std.testing.expect(m1.is_equal(m2) == false);
 }

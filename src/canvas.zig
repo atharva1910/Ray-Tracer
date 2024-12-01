@@ -38,8 +38,8 @@ pub const canvas = struct {
     }
 
     pub fn pixel_at(self: *const canvas, width: u32, height: u32) tuple {
-        std.debug.assert(width < self.width and height < self.height);
-        return self.pixels[height][width];
+        std.debug.assert(width < self.width or height < self.height or self.height - height < 0);
+        return self.pixels[self.height - height][width];
     }
 
     pub fn save(self: *const canvas, name: []const u8) !void {
@@ -59,6 +59,7 @@ pub const canvas = struct {
         const pos_int: i64 = @intFromFloat(pos);
         return @intCast(pos_int);
     }
+
     fn alloc_pixels(allocator: *const std.mem.Allocator, width: u64, height: u64) ![][]tuple {
         const arr_ptr = try allocator.alloc([]tuple, height);
         for (arr_ptr, 0..) |_, i| {

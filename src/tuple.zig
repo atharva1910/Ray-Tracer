@@ -1,4 +1,5 @@
 const std = @import("std");
+const are_floats_equal = @import("helper.zig").are_floats_equal;
 
 pub const tuple = struct {
     x: f64,
@@ -22,15 +23,10 @@ pub const tuple = struct {
         return tuple{ .x = red, .y = green, .z = blue, .w = 0 };
     }
 
-    fn are_floats_equal(x: f64, y: f64, epsilon: comptime_float) bool {
-        return @abs(x - y) < epsilon;
-    }
-
     pub fn are_equal(t1: tuple, t2: tuple) bool {
-        const epsilon = 0.00001;
-        return are_floats_equal(t1.x, t2.x, epsilon) and
-            are_floats_equal(t1.y, t2.y, epsilon) and
-            are_floats_equal(t1.z, t2.z, epsilon) and
+        return are_floats_equal(t1.x, t2.x) and
+            are_floats_equal(t1.y, t2.y) and
+            are_floats_equal(t1.z, t2.z) and
             (t1.w == t2.w);
     }
 
@@ -112,6 +108,11 @@ pub const tuple = struct {
 
     pub fn print(t: tuple) void {
         std.log.info("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{ t.x, t.y, t.z, t.w });
+    }
+
+    // pass log level instead of another func
+    pub fn err_print(t: tuple) void {
+        std.log.err("t.x:{} t.y:{} t.z:{} t.w:{}\n", .{ t.x, t.y, t.z, t.w });
     }
 };
 
