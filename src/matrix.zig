@@ -15,7 +15,23 @@ pub const matrix = struct {
         };
     }
 
-    pub fn set(self: *matrix, x: u8, y: u8, value: f64) void {
+    pub fn init_identity(row_size: u8, col_size: u8) matrix {
+        var ret = matrix.init(row_size, col_size);
+
+        for (0..ret.row_size) |i| {
+            for (0..ret.col_size) |j| {
+                if (i == j) {
+                    ret.set(i, j, 1);
+                } else {
+                    ret.set(i, j, 0);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    pub fn set(self: *matrix, x: usize, y: usize, value: f64) void {
         std.debug.assert(x < self.row_size and y < self.col_size);
         self.values[x][y] = value;
     }
@@ -32,7 +48,7 @@ pub const matrix = struct {
         }
     }
 
-    pub fn get(self: *const matrix, x: u8, y: u8) f64 {
+    pub fn get(self: *const matrix, x: usize, y: usize) f64 {
         std.debug.assert(x < self.row_size and y < self.col_size);
         return self.values[x][y];
     }
@@ -51,7 +67,7 @@ pub const matrix = struct {
     pub fn multiply(self: *const matrix, other: *const matrix) matrix {
         //std.debug.assert(self.row_size != matrix.MAX_SIZE or other.row_size != MAX_SIZE);
         //std.debug.assert(self.col_size != matrix.MAX_SIZE or other.col_size != MAX_SIZE);
-        //std.debug.assert(self.row_size != other.col_size);
+        std.debug.assert(self.col_size == other.row_size);
 
         var ret: matrix = matrix.init(matrix.MAX_SIZE, matrix.MAX_SIZE);
 
@@ -134,5 +150,14 @@ test "matrix test" {
     mul_ret.set_row(2, .{ 40, 58, 110, 102 });
     mul_ret.set_row(3, .{ 16, 26, 46, 42 });
 
-    try std.testing.expect(mul1.multiply(&m2).is_equal(&mul_ret) == false);
+    try std.testing.expect(mul1.multiply(&mul2).is_equal(&mul_ret));
+
+    // Identity matrix
+    var mul3 = matrix.init(4, 4);
+    mul3.set_row(0, .{ 0, 1, 2, 4 });
+    mul3.set_row(1, .{ 1, 2, 4, 8 });
+    mul3.set_row(2, .{ 2, 4, 8, 16 });
+    mul3.set_row(3, .{ 4, 8, 16, 32 });
+    const identity_matrix = matrix.init_identity(4, 4);
+    try std.testing.expect(mul3.multiply(&identity_matrix).is_equal(&mul3));
 }
