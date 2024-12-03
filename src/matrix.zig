@@ -186,4 +186,5 @@ test "matrix test" {
     ret_trans_matrix.set_row(3, .{ 0, 8, 3, 8 });
 
     try std.testing.expect(trans_matrix.transpose().is_equal(&ret_trans_matrix));
+    try std.testing.expect(identity_matrix.transpose().is_equal(&identity_matrix));
 }
