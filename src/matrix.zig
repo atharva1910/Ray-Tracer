@@ -83,6 +83,17 @@ pub const matrix = struct {
 
         return ret;
     }
+
+    pub fn transpose(self: *const matrix) matrix {
+        var ret_matrix = matrix.init(self.col_size, self.row_size);
+        for (0..self.row_size) |i| {
+            for (0..self.col_size) |j| {
+                ret_matrix.values[j][i] = self.values[i][j];
+            }
+        }
+
+        return ret_matrix;
+    }
 };
 
 test "matrix test" {
@@ -160,4 +171,19 @@ test "matrix test" {
     mul3.set_row(3, .{ 4, 8, 16, 32 });
     const identity_matrix = matrix.init_identity(4, 4);
     try std.testing.expect(mul3.multiply(&identity_matrix).is_equal(&mul3));
+
+    // Transpose
+    var trans_matrix = matrix.init(4, 4);
+    trans_matrix.set_row(0, .{ 0, 9, 3, 0 });
+    trans_matrix.set_row(1, .{ 9, 8, 0, 8 });
+    trans_matrix.set_row(2, .{ 1, 8, 5, 3 });
+    trans_matrix.set_row(3, .{ 0, 0, 5, 8 });
+
+    var ret_trans_matrix = matrix.init(4, 4);
+    ret_trans_matrix.set_row(0, .{ 0, 9, 1, 0 });
+    ret_trans_matrix.set_row(1, .{ 9, 8, 8, 0 });
+    ret_trans_matrix.set_row(2, .{ 3, 0, 5, 5 });
+    ret_trans_matrix.set_row(3, .{ 0, 8, 3, 8 });
+
+    try std.testing.expect(trans_matrix.transpose().is_equal(&ret_trans_matrix));
 }
