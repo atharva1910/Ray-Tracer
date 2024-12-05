@@ -94,6 +94,11 @@ pub const matrix = struct {
 
         return ret_matrix;
     }
+
+    pub fn determinant(self: *const matrix) f64 {
+        std.debug.assert(self.row_size == 2 and self.col_size == 2);
+        return self.values[0][0] * self.values[1][1] - self.values[0][1] * self.values[1][0];
+    }
 };
 
 test "matrix test" {
@@ -187,4 +192,7 @@ test "matrix test" {
 
     try std.testing.expect(trans_matrix.transpose().is_equal(&ret_trans_matrix));
     try std.testing.expect(identity_matrix.transpose().is_equal(&identity_matrix));
+
+    // Determinant
+    try std.testing.expect(m2_copy.determinant() == 1);
 }
